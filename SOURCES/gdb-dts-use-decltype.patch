@@ -1,0 +1,29 @@
+From FEDORA_PATCHES Mon Sep 17 00:00:00 2001
+From: Keith Seitz <keiths@redhat.com>
+Date: Thu, 17 Jun 2021 14:17:23 -0400
+Subject: gdb-dts-use-decltype.patch
+
+;; Use decltype instead of typeof in headers
+;; (Keith Seitz)
+
+DTS11 defaults to c++17, which causes problems with the system-supplied
+python headers, which use the (now forbidden) "register" storage class.
+
+To work around this, we explicitly enable -std=c++11. However, that
+now causes problems with the use of "typeof" in header files, since
+-std often disables certain keywords.
+
+Fix this by using the standard's decltype specifier instead.
+
+diff --git a/gdbsupport/gdb_proc_service.h b/gdbsupport/gdb_proc_service.h
+--- a/gdbsupport/gdb_proc_service.h
++++ b/gdbsupport/gdb_proc_service.h
+@@ -174,7 +174,7 @@ extern ps_err_e ps_lsetxregs (struct ps_prochandle *ph, lwpid_t lwpid,
+    -fvisibility=hidden.  */
+ 
+ #define PS_EXPORT(SYM)						\
+-  __attribute__((visibility ("default"))) typeof (SYM) SYM
++  __attribute__((visibility ("default"))) decltype (SYM) SYM
+ 
+ PS_EXPORT (ps_get_thread_area);
+ PS_EXPORT (ps_getpid);
