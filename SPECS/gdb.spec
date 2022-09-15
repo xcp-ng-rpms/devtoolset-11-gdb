@@ -512,7 +512,7 @@ Version: 10.2
 
 # The release always contains a leading reserved number, start it at 1.
 # `upstream' is not a part of `name' to stay fully rpm dependencies compatible for the testing.
-Release: %{?xsrel}%{?dist}
+Release: %{?xsrel}.1%{?dist}
 
 License: GPLv3+ and GPLv3+ with exceptions and GPLv2+ and GPLv2+ with exceptions and GPL+ and LGPLv2+ and LGPLv3+ and BSD and Public Domain and GFDL
 # Do not provide URL for snapshots as the file lasts there only for 2 days.
@@ -796,11 +796,6 @@ BuildRequires: python3-devel%{buildisa}
 BuildRequires: libstdc++%{buildisa}
 %endif # 0%{?rhel:1} && 0%{?rhel} <= 7
 %endif # 0%{!?_without_python:1}
-# gdb-doc in PDF, see: https://bugzilla.redhat.com/show_bug.cgi?id=919891#c10
-BuildRequires: texinfo-tex
-%if 0%{!?rhel:1} || 0%{?rhel} > 6
-BuildRequires: texlive-collection-latexrecommended
-%endif
 # Permit rebuilding *.[0-9] files even if they are distributed in gdb-*.tar:
 BuildRequires: /usr/bin/pod2man
 %if 0%{!?rhel:1} || 0%{?rhel} > 7
@@ -1027,7 +1022,7 @@ GDB, the GNU debugger, allows you to debug programs written in C, C++,
 Java, and other languages, by executing them in a controlled fashion
 and printing their data.
 
-This package provides INFO, HTML and PDF user manual for GDB.
+This package provides INFO user manual for GDB.
 
 %prep
 %autosetup -p1 -n %{gdb_src}
@@ -1353,11 +1348,6 @@ fi
 cd ..
 
 done    # fprofile
-
-cd %{gdb_build}
-
-%make_build \
-     -C gdb/doc {gdb,annotate}{.info,/index.html,.pdf} MAKEHTMLFLAGS=--no-split MAKEINFOFLAGS=--no-split V=1
 
 # Copy the <sourcetree>/gdb/NEWS file to the directory above it.
 cp $RPM_BUILD_DIR/%{gdb_src}/gdb/NEWS $RPM_BUILD_DIR/%{gdb_src}
@@ -1693,7 +1683,6 @@ done
 %endif # 0%{!?_without_python:1}
 
 %files doc
-%doc %{gdb_build}/gdb/doc/{gdb,annotate}.{html,pdf}
 %{_infodir}/annotate.info*
 %{_infodir}/gdb.info*
 
@@ -1726,6 +1715,9 @@ fi
 %endif
 
 %changelog
+* Thu Sep 15 2022 Samuel Verschelde <stormi-xcp@ylix.fr> - 10.2-5.1
+- Don't build HTML and PDF docs, to avoid a BuildRequires on texlive
+
 * Mon Jun 21 2021 Keith Seitz <keiths@redhat.com> - 10.2-5.el7
 - Drop gdb-linux_perf-bundle.patch and v1.5-libipt-static.patch.
 - Include gdb-dts-use-decltype.patch.
